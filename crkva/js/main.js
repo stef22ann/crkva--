@@ -1,19 +1,144 @@
-window.onload = () => {
+// window.onload = () => {
     function setLocalStorage(name,data){
         localStorage.setItem(name, JSON.stringify(data));
       }
       function getLocalStorage(name){
         return JSON.parse(localStorage.getItem(name));
       }
+      function ajaxZaSve(url, method, result){
+        $.ajax({
+            url:url,
+            method: method,
+            dataType: "json",
+            success: result,
+            error: function(xhr){console.log(xhr);}
+        });
+    }
+
     var url=window.location.href;
+    if(url.indexOf('index.html')!=-1)
+    {
+        function dogadjajiIndexf()
+        {
+            var id=$(this).data('id');
+            console.log(id);
+            setLocalStorage("idDogadjaj",id);
+        }
+        function ispisDogadjaja()
+        {
+            ajaxZaSve("data/desavanja.json","get",function(result)
+            {	
+            setLocalStorage("dogadjaji",result);
+            var ispisDogadjaja="";
+            for(let i=0;i<=3;i++)
+            {
+                            ispisDogadjaja+=`
+                            <div class="col-md-3 col-sm-6 box">
+                            <div class="news vest">
+                                <a href="dogadjaji.html"data-id="${result[i].id}"class="slika"><image class="news-image" style="height:200px;" src="images/${result[i].slika}" alt="${result[i].slika}"></image></a>
+                                <h3 class="news-title"><a href="dogadjaji.html" data-id="${result[i].id}"class="slika">${result[i].naslov}</a></h3>
+                                <small class="date"><i class="fa fa-calendar"></i>${result[i].datum}</small>
+                            </div>
+                            </div>
+                            `
+            }
+            ispisDogadjaja+=
+            `
+            <div class="text-center" style="width: 100%;">
+                                        <a href="vesti.html" class="button">Више</a>
+                                    </div>
+            `;
+            
+            $("#indexNews").html(ispisDogadjaja);
+            $( ".slika" ).mouseenter(dogadjajiIndexf);
+            });
+            //var dogadjajiIndex=getLocalStorage("dogadjaji");
+
+        }
+        ispisDogadjaja();
+
+        function videoIndex()
+        {
+            var id=$(this).data('id');
+            console.log(id);
+            setLocalStorage("zasebanVideo",id);
+        }
+        function ispisVideo()
+        {
+            ajaxZaSve("data/video.json","get",function(result)
+            {	
+            setLocalStorage("video",result);
+            ispisVideo='';
+            for(let i=0;i<4;i++)
+            {
+                console.log(result[i].src);
+                ispisVideo+=`
+                <div class="col-md-3 col-sm-6">
+                <div class="news slika1"  data-id="${result[i].id}">
+                    <iframe width="100%" height="174px" src="${result[i].src}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    <h3 class="news-title"><a href="videoStrana.html">${result[i].naslov}</a></h3>
+                    <small class="date"><i class="fa fa-calendar"></i>${result[i].datum}</small>
+                </div>
+                </div>
+                `
+            }
+            ispisVideo+=
+            `
+            <div class="text-center" style="width: 100%;">
+                                        <a href="video.html" class="button">Више</a>
+                                    </div>
+            `
+            $("#indexNewsVideo").html(ispisVideo);
+            $( ".slika1" ).mouseenter(videoIndex);
+            });
+            //var nizVideo=getLocalStorage("video");
+
+        }
+        ispisVideo();
+        function cudaIndex()
+        {
+            var id=$(this).data('id');
+            console.log(id);
+            setLocalStorage("idCuda",id);
+        }
+        $( ".slika2" ).mouseenter(cudaIndex);
+        function ispisCudaF()
+        {
+            ajaxZaSve("data/cuda.json","get",function(result)
+            {	
+            setLocalStorage("cuda",result);
+            var item = result[Math.floor(Math.random() * result.length)];
+            var ispisCuda=`
+            <a href="cuda.html" class="slikaCudo"data-id='${item.id}'><image class="news-image" style="width: 50%;" src="${item.slika}"></image></a>
+            <small class="date"><i class="fa fa-calendar"></i>${item.datum}</small>
+            <label><h3 class="news-title"><a href="cuda.html"class="slikaCudo"data-id='${item.id}'>${item.naziv}</a></h3></label>
+            `;
+            $("#cudo").html(ispisCuda);
+            $(".slikaCudo").mouseenter(function()
+            {
+                var id=$(this).data('id');
+                setLocalStorage("idCudo",id);
+            })
+            });
+        
+        
+            //var svaCuda=getLocalStorage("cuda");
+
+        }
+        ispisCudaF();
+
+
+}
     if(url.indexOf('galerija.html')!=-1)
     {
+
         $.ajax({
             url:'data/galerija.json',
             method:"get",
             dataType:'json',
             success:function(result)
             {
+                setLocalStorage("galerija",result);
                 var ispis=`
                 <div class="w3-container">
 
@@ -47,51 +172,47 @@ window.onload = () => {
                 div.innerHTML=ispis;
             }
     });
-    $.ajax({
-        url:'data/desavanja.json',
-        method:"get",
-        dataType:'json',
-        success:function(result)
-        {
-            setLocalStorage("dogadjaji",result);
-        }
-    });
-    var ispis2=`<ul class="popular-posts" id="izdvojeno">`;
-    var dogadjaji1=getLocalStorage("dogadjaji");
-    dogadjaji1.forEach(element => {
-        ispis2+=
-        `
-        <li style="padding:5px;">                                    
-        <!--Post item small-->
-        <div class="post-item-small" style="display:flex;">
-                    <div class="left"style="width:50%;">
-                    <a class="slika" target="_blank" href="dogadjaji.html" data-id="${element.id}">
-                       <img src="images/${element.slika}" alt="${element.slika}" style="width:100%!important;">          
-                    </a>
-                </div>
-                <div class="right"style="width:40%;padding:5px;">
-                <h3 class="title"style="margin-bottom:0px;">
-                    <a class="slika" target="_blank" data-id="${element.id}" href="dogadjaji.html">
-                        ${element.naslov}            </a>
-                </h3>
-                <small data-id="${element.autor}" class="date"><i class="fa fa-user"></i>${element.autor}</small></br>
-                <small data-id="${element.id}" class="date"><i class="fa fa-calendar"></i>${element.datum}</small>
-            </div>
-        </div>                            </li>
-        `
-    });
-    ispis2+=`</ul>`;
-    $("#tab_popular_posts_response").html(ispis2);
-    $( ".slika" ).mouseenter(function()
+    ajaxZaSve("data/desavanja.json","get",function(result)
     {
-        var id=$(this).data('id');
-        console.log(id);
-        setLocalStorage("idDogadjaj",id);
-    });
+        setLocalStorage("desavanja",result);
+        var ispis2=`<ul class="popular-posts" id="izdvojeno">`;
+        //var dogadjaji1=getLocalStorage("dogadjaji");
+        result.forEach(element => {
+            ispis2+=
+            `
+            <li style="padding:5px;">                                    
+            <!--Post item small-->
+            <div class="post-item-small" style="display:flex;">
+                        <div class="left"style="width:50%;">
+                        <a class="slika" target="_blank" href="dogadjaji.html" data-id="${element.id}">
+                           <img src="images/${element.slika}" alt="${element.slika}" style="width:100%!important;">          
+                        </a>
+                    </div>
+                    <div class="right"style="width:40%;padding:5px;">
+                    <h3 class="title"style="margin-bottom:0px;">
+                        <a class="slika" target="_blank" data-id="${element.id}" href="dogadjaji.html">
+                            ${element.naslov}            </a>
+                    </h3>
+                    <small data-id="${element.autor}" class="date"><i class="fa fa-user"></i>${element.autor}</small></br>
+                    <small data-id="${element.id}" class="date"><i class="fa fa-calendar"></i>${element.datum}</small>
+                </div>
+            </div>                            </li>
+            `
+        });
+        ispis2+=`</ul>`;
+        $("#tab_popular_posts_response").html(ispis2);
+        $( ".slika" ).mouseenter(function()
+        {
+            var id=$(this).data('id');
+            console.log(id);
+            setLocalStorage("idDogadjaj",id);
+        });
+    })
+
 
 
     }
-    var url=window.location.href;
+    // var url=window.location.href;
     if(url.indexOf('vesti.html')!=-1)
     {
         function dogadjaji()
@@ -133,27 +254,23 @@ window.onload = () => {
                 $( ".slika" ).hover(dogadjaji);
             }
         });
-        $.ajax({
-            url:'data/galerija.json',
-            method:"get",
-            dataType:'json',
-            success:function(result)
-            {	
+
+            ajaxZaSve("data/galerija.json","get",function(result){
                 setLocalStorage("slike",result);
-            }
-            });
-            var slike=getLocalStorage("slike");
-            var ispisSlike="";
-            for(let i=1;i<=4;i++)
-            {
-            	var item = slike[Math.floor(Math.random() * slike.length)];
-            	ispisSlike+=`
-            	<a href="galerija.html"><img style="width:45%;" src="images/${item.src}.jpg" alt="${item.src}"></a>
-            	`
-            }
-            $("#randomImages").html(ispisSlike);      
+                //var slike=getLocalStorage("slike");
+                var ispisSlike="";
+                for(let i=1;i<=4;i++)
+                {
+                    var item = result[Math.floor(Math.random() * result.length)];
+                    ispisSlike+=`
+                    <a href="galerija.html"><img style="width:45%;" src="images/${item.src}.jpg" alt="${item.src}"></a>
+                    `
+                }
+                $("#randomImages").html(ispisSlike); 
+            })
+     
     }
-    var url=window.location.href;
+    // var url=window.location.href;
     if(url.indexOf('dogadjaji.html')!=-1)
     {       
         var dogadjaj=getLocalStorage("dogadjaji");
@@ -226,112 +343,9 @@ window.onload = () => {
             setLocalStorage("idDogadjaj",id);
         });
     }
-    var url=window.location.href;
-	      function ajaxZaSve(url, method, result){
-        $.ajax({
-            url:url,
-            method: method,
-            dataType: "json",
-            success: result,
-            error: function(xhr){console.log(xhr);}
-        });
-    }
-	ajaxZaSve("data/cuda.json","get",function(result)
-    {	
-	setLocalStorage("cuda",result);
-    });
-    ajaxZaSve("data/desavanja.json","get",function(result)
-    {	
-	setLocalStorage("dogadjaji",result);
-    });
-    ajaxZaSve("data/video.json","get",function(result)
-    {	
-	setLocalStorage("video",result);
-    });
-    if(url.indexOf('index.html')!=-1)
-    {
-        function dogadjajiIndexf()
-        {
-            var id=$(this).data('id');
-            console.log(id);
-            setLocalStorage("idDogadjaj",id);
-        }
-        var dogadjajiIndex=getLocalStorage("dogadjaji");
-        var ispisDogadjaja="";
-        for(let i=0;i<=3;i++)
-        {
-                        ispisDogadjaja+=`
-                        <div class="col-md-3 col-sm-6 box">
-                        <div class="news vest">
-                            <a href="dogadjaji.html"data-id="${dogadjajiIndex[i].id}"class="slika"><image class="news-image" style="height:200px;" src="images/${dogadjajiIndex[i].slika}" alt="${dogadjajiIndex[i].slika}"></image></a>
-                            <h3 class="news-title"><a href="dogadjaji.html" data-id="${dogadjajiIndex[i].id}"class="slika">${dogadjajiIndex[i].naslov}</a></h3>
-                            <small class="date"><i class="fa fa-calendar"></i>${dogadjajiIndex[i].datum}</small>
-                        </div>
-                        </div>
-                        `
-        }
-        ispisDogadjaja+=
-        `
-        <div class="text-center" style="width: 100%;">
-									<a href="vesti.html" class="button">Више</a>
-								</div>
-        `;
-        
-        $("#indexNews").html(ispisDogadjaja);
-        $( ".slika" ).mouseenter(dogadjajiIndexf);
-        function videoIndex()
-        {
-            var id=$(this).data('id');
-            console.log(id);
-            setLocalStorage("zasebanVideo",id);
-        }
-        var nizVideo=getLocalStorage("video");
-        ispisVideo='';
-        for(let i=0;i<4;i++)
-        {
-            console.log(nizVideo[i].src);
-            ispisVideo+=`
-            <div class="col-md-3 col-sm-6">
-            <div class="news slika1"  data-id="${nizVideo[i].id}">
-                <iframe width="100%" height="174px" src="${nizVideo[i].src}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                <h3 class="news-title"><a href="videoStrana.html">${nizVideo[i].naslov}</a></h3>
-                <small class="date"><i class="fa fa-calendar"></i>${nizVideo[i].datum}</small>
-            </div>
-            </div>
-            `
-        }
-        ispisVideo+=
-        `
-        <div class="text-center" style="width: 100%;">
-									<a href="video.html" class="button">Више</a>
-								</div>
-        `
-        $("#indexNewsVideo").html(ispisVideo);
-        $( ".slika1" ).mouseenter(videoIndex);
-        function cudaIndex()
-        {
-            var id=$(this).data('id');
-            console.log(id);
-            setLocalStorage("idCuda",id);
-        }
-        $( ".slika2" ).mouseenter(cudaIndex);
+//     var url=window.location.href;
 
-        var svaCuda=getLocalStorage("cuda");
-        var item = svaCuda[Math.floor(Math.random() * svaCuda.length)];
-        var ispisCuda=`
-        <a href="cuda.html" class="slikaCudo"data-id='${item.id}'><image class="news-image" style="width: 50%;" src="${item.slika}"></image></a>
-		<small class="date"><i class="fa fa-calendar"></i>${item.datum}</small>
-		<label><h3 class="news-title"><a href="cuda.html"class="slikaCudo"data-id='${item.id}'>${item.naziv}</a></h3></label>
-        `;
-        $("#cudo").html(ispisCuda);
-        $(".slikaCudo").mouseenter(function()
-        {
-            var id=$(this).data('id');
-            setLocalStorage("idCudo",id);
-        })
-
-}
-var url=window.location.href;
+// var url=window.location.href;
 if(url.indexOf('video.html')!=-1)
 {
     var div=document.getElementById("video");
@@ -372,29 +386,34 @@ if(url.indexOf('video.html')!=-1)
         $("#video").html(ispisVideo);
         $(".video").click(videoLocal);
     }});
-    $.ajax({
-        url:'data/galerija.json',
-        method:"get",
-        dataType:'json',
-        success:function(result)
-        {	
-            setLocalStorage("slike",result);
-        }
-        });
-        var slike=getLocalStorage("slike");
-        var ispisSlike="";
-        for(let i=1;i<=4;i++)
+    // $.ajax({
+    //     url:'data/galerija.json',
+    //     method:"get",
+    //     dataType:'json',
+    //     success:function(result)
+    //     {	
+            
+    //     }
+    //     });
+        ajaxZaSve("data/galerija.json","get",function(result)
         {
-            var item = slike[Math.floor(Math.random() * slike.length)];
-            ispisSlike+=`
-            <a href="galerija.html"><img style="width:45%;" src="images/${item.src}.jpg" alt="${item.src}"></a>
-            `
-        }
-        $("#randomImages").html(ispisSlike); 
+            setLocalStorage("slike",result);
+            //var slike=getLocalStorage("slike");
+            var ispisSlike="";
+            for(let i=1;i<=4;i++)
+            {
+                var item = result[Math.floor(Math.random() * result.length)];
+                ispisSlike+=`
+                <a href="galerija.html"><img style="width:45%;" src="images/${item.src}.jpg" alt="${item.src}"></a>
+                `
+            }
+            $("#randomImages").html(ispisSlike); 
+        })
+
     
 
 }
-var url=window.location.href;
+// var url=window.location.href;
 if(url.indexOf('videoStrana.html')!=-1)
 {
     var id=getLocalStorage("zasebanVideo");
@@ -413,103 +432,118 @@ if(url.indexOf('videoStrana.html')!=-1)
     
     `;
     $("#dogadjaj").html(ispis);
-    $.ajax({
-        url:'data/desavanja.json',
-        method:"get",
-        dataType:'json',
-        success:function(result)
-        {
-            setLocalStorage("dogadjaji",result);
-        }
-    });
-    var ispis2=`<ul class="popular-posts" id="izdvojeno">`;
-    var dogadjaji1=getLocalStorage("dogadjaji");
-    dogadjaji1.forEach(element => {
-        ispis2+=
-        `
-        <li style="padding:5px;">                                    
-        <!--Post item small-->
-        <div class="post-item-small" style="display:flex;">
-                    <div class="left"style="width:50%;">
-                    <a class="slika" target="_blank" href="dogadjaji.html" data-id="${element.id}">
-                       <img src="images/${element.slika}" alt="${element.slika}" style="width:100%!important;">          
-                    </a>
-                </div>
-                <div class="right"style="width:40%;padding:5px;">
-                <h3 class="title"style="margin-bottom:0px;">
-                    <a class="slika" target="_blank" data-id="${element.id}" href="dogadjaji.html">
-                        ${element.naslov}            </a>
-                </h3>
-                <small data-id="${element.autor}" class="date"><i class="fa fa-user"></i>${element.autor}</small></br>
-                <small data-id="${element.id}" class="date"><i class="fa fa-calendar"></i>${element.datum}</small>
-            </div>
-        </div>                            </li>
-        `
-    });
-    ispis2+=`</ul>`;
-    $("#tab_popular_posts_response").html(ispis2);
-    $( ".slika" ).mouseenter(function()
+    // $.ajax({
+    //     url:'data/desavanja.json',
+    //     method:"get",
+    //     dataType:'json',
+    //     success:function(result)
+    //     {
+    //         setLocalStorage("dogadjaji",result);
+    //     }
+    // });
+    ajaxZaSve("data/desavanja.json","get",function(result)
     {
-        var id=$(this).data('id');
-        console.log(id);
-        setLocalStorage("idDogadjaj",id);
-    });
+        setLocalStorage("dogadjaji",result);
+        var ispis2=`<ul class="popular-posts" id="izdvojeno">`;
+        //var dogadjaji1=getLocalStorage("dogadjaji");
+        result.forEach(element => {
+            ispis2+=
+            `
+            <li style="padding:5px;">                                    
+            <!--Post item small-->
+            <div class="post-item-small" style="display:flex;">
+                        <div class="left"style="width:50%;">
+                        <a class="slika" target="_blank" href="dogadjaji.html" data-id="${element.id}">
+                           <img src="images/${element.slika}" alt="${element.slika}" style="width:100%!important;">          
+                        </a>
+                    </div>
+                    <div class="right"style="width:40%;padding:5px;">
+                    <h3 class="title"style="margin-bottom:0px;">
+                        <a class="slika" target="_blank" data-id="${element.id}" href="dogadjaji.html">
+                            ${element.naslov}            </a>
+                    </h3>
+                    <small data-id="${element.autor}" class="date"><i class="fa fa-user"></i>${element.autor}</small></br>
+                    <small data-id="${element.id}" class="date"><i class="fa fa-calendar"></i>${element.datum}</small>
+                </div>
+            </div>                            </li>
+            `
+        });
+        ispis2+=`</ul>`;
+        $("#tab_popular_posts_response").html(ispis2);
+        $( ".slika" ).mouseenter(function()
+        {
+            var id=$(this).data('id');
+            console.log(id);
+            setLocalStorage("idDogadjaj",id);
+        });
+    })
+
 
 }
-var url=window.location.href;
+// var url=window.location.href;
 if(url.indexOf('cuda.html')!=-1)
 {
-    $.ajax({
-        url:'data/cuda.json',
-        method:"get",
-        dataType:'json',
-        success:function(result)
-        {	
-            setLocalStorage("cuda",result);
-        }
+    // $.ajax({
+    //     url:'data/cuda.json',
+    //     method:"get",
+    //     dataType:'json',
+    //     success:function(result)
+    //     {	
+    //         setLocalStorage("cuda",result);
+    //     }
         
+    // })
+    ajaxZaSve("data/cuda.json","get",function(result)
+    {
+        setLocalStorage("cuda",result);
+        //var cuda=getLocalStorage("cuda");
+        var id=getLocalStorage("idCuda");
+        var cudo=result.find(x=>x.id==id);
+        var ispis="";
+        // cuda.forEach(element => {
+            ispis+=`<div class="content col-md-8"style="background-color:aliceblue;width:100%;margin:auto;">
+            <div class="col-sm-6"style="width:100%;">
+            <div class="news">
+               <img src="${cudo.slika}"alt="cuda" style="width:60%;">
+                <h3 class="news-title" >${cudo.naziv}</h3>
+                <small class="date"><i class="fa fa-calendar"></i>${cudo.datum}</small>
+                <p>${cudo.opis}</p>
+            </div>
+            </div>
+            </div>
+            
+            `;
+        // });
+    
+        $("#cuda").html(ispis);
     })
-    var cuda=getLocalStorage("cuda");
-    var id=getLocalStorage("idCudo");
-    var cudo=cuda.find(x=>x.id==id);
-    var ispis="";
-    // cuda.forEach(element => {
-        ispis+=`<div class="content col-md-8"style="background-color:aliceblue;width:100%;margin:auto;">
-        <div class="col-sm-6"style="width:100%;">
-        <div class="news">
-           <img src="${cudo.slika}"alt="cuda" style="width:60%;">
-            <h3 class="news-title" >${cudo.naziv}</h3>
-            <small class="date"><i class="fa fa-calendar"></i>${cudo.datum}</small>
-            <p>${cudo.opis}</p>
-        </div>
-        </div>
-        </div>
-        
-        `;
-    // });
 
-    $("#cuda").html(ispis);
-    $.ajax({
-        url:'data/galerija.json',
-        method:"get",
-        dataType:'json',
-        success:function(result)
-        {	
-            setLocalStorage("slike",result);
-        }
-        });
-        var slike=getLocalStorage("slike");
-        var ispisSlike="";
-        for(let i=1;i<=4;i++)
+    // $.ajax({
+    //     url:'data/galerija.json',
+    //     method:"get",
+    //     dataType:'json',
+    //     success:function(result)
+    //     {	
+    //         setLocalStorage("slike",result);
+    //     }
+    //     });
+        ajaxZaSve("data/galerija.json","get",function(result)
         {
-            var item = slike[Math.floor(Math.random() * slike.length)];
-            ispisSlike+=`
-            <a href="galerija.html"><img style="width:45%;" src="images/${item.src}.jpg" alt="${item.src}"></a>
-            `
-        }
-        $("#randomImages").html(ispisSlike); 
+            setLocalStorage("slike",result);
+            //var slike=getLocalStorage("slike");
+            var ispisSlike="";
+            for(let i=1;i<=4;i++)
+            {
+                var item = result[Math.floor(Math.random() * result.length)];
+                ispisSlike+=`
+                <a href="galerija.html"><img style="width:45%;" src="images/${item.src}.jpg" alt="${item.src}"></a>
+                `
+            }
+            $("#randomImages").html(ispisSlike); 
+        })
+
 }
-var url=window.location.href;
+// var url=window.location.href;
 if(url.indexOf('svaCuda.html')!=-1)
 {
     $.ajax({
@@ -522,28 +556,35 @@ if(url.indexOf('svaCuda.html')!=-1)
         }
         
     })
+    ajaxZaSve('data/cuda.json',"get",function(result)
+    {
+        setLocalStorage("cuda",result);
+        var ispis="";
+        result.forEach(element => {
+            ispis+=                    `
+            <li>
+            <a href="cuda.html"data-id="${element.id}"class="slika3"> <img  src="${element.slika}" style="width: 121px; height: 121px;" alt=""></a>
+            <div class="seremon-detail">
+                <h3 class="seremon-title"><a class="slika3" href="cuda.html" data-id="${element.id}">${element.naziv}</a></h3>
+    
+                <p style="font-family: emoji!important;">${element.opis}</p>
+            </div>
+            </li>
+            `
+        });
+        $("#cuda").html(ispis);
+        $(".slika3").mouseenter(cudaLocal);
+    })
     function cudaLocal()
     {
         var id=$(this).data("id");
         setLocalStorage("idCuda",id)
     };
-    var cuda=getLocalStorage("cuda");
-    var ispis="";
-    cuda.forEach(element => {
-        ispis+=                    `
-        <li>
-        <a href="cuda.html"data-id="${element.id}"class="slika3"> <img  src="${element.slika}" style="width: 121px; height: 121px;" alt=""></a>
-        <div class="seremon-detail">
-            <h3 class="seremon-title"><a class="slika3" href="cuda.html" data-id="${element.id}">${element.naziv}</a></h3>
+    //var cuda=getLocalStorage("cuda");
 
-            <p style="font-family: emoji!important;">${element.opis}</p>
-        </div>
-        </li>
-        `
-    });
 
-    $("#cuda").html(ispis);
-    $(".slika3").mouseenter(cudaLocal);
+    
+    
     $.ajax({
         url:'data/galerija.json',
         method:"get",
@@ -553,127 +594,147 @@ if(url.indexOf('svaCuda.html')!=-1)
             setLocalStorage("slike",result);
         }
         });
-        var slike=getLocalStorage("slike");
-        var ispisSlike="";
-        for(let i=1;i<=4;i++)
+        ajaxZaSve('data/galerija.json',"get",function(result)
         {
-            var item = slike[Math.floor(Math.random() * slike.length)];
-            ispisSlike+=`
-            <a href="galerija.html"><img style="width:45%;" src="images/${item.src}.jpg" alt="${item.src}"></a>
-            `
-        }
-        $("#randomImages").html(ispisSlike);  
+            var ispisSlike="";
+            for(let i=1;i<=4;i++)
+            {
+                var item = result[Math.floor(Math.random() * result.length)];
+                ispisSlike+=`
+                <a href="galerija.html"><img style="width:45%;" src="images/${item.src}.jpg" alt="${item.src}"></a>
+                `
+            }
+            $("#randomImages").html(ispisSlike);
+        })
+        //var slike=getLocalStorage("slike");
+  
 
 }
-var url=window.location.href;
+// var url=window.location.href;
 if(url.indexOf('ocrkvi.html')!=-1)
 {
-    $.ajax({
-        url:'data/desavanja.json',
-        method:"get",
-        dataType:'json',
-        success:function(result)
-        {	
-            setLocalStorage("dogadjaji",result);
-        }
-    });
-    var ispis2=`<ul class="popular-posts" id="izdvojeno">`;
-    var dogadjaji1=getLocalStorage("dogadjaji");
-    dogadjaji1.forEach(element => {
-        ispis2+=
-        `
-        <li style="padding:5px;">                                    
-        <!--Post item small-->
-        <div class="post-item-small" style="display:flex;">
-                    <div class="left"style="width:50%;">
-                    <a class="slika" target="_blank" href="dogadjaji.html" data-id="${element.id}">
-                       <img src="images/${element.slika}" alt="${element.slika}" style="width:100%!important;">          
-                    </a>
-                </div>
-                <div class="right"style="width:40%;padding:5px;">
-                <h3 class="title"style="margin-bottom:0px;">
-                    <a class="slika" target="_blank" data-id="${element.id}" href="dogadjaji.html">
-                        ${element.naslov}            </a>
-                </h3>
-                <small data-id="${element.autor}" class="date"><i class="fa fa-user"></i>${element.autor}</small></br>
-                <small data-id="${element.id}" class="date"><i class="fa fa-calendar"></i>${element.datum}</small>
-            </div>
-        </div>                            </li>
-        `
-    });
-    ispis2+=`</ul>`;
-    $("#tab_popular_posts_response").html(ispis2);
-    $( ".slika" ).mouseenter(function()
+    // $.ajax({
+    //     url:'data/desavanja.json',
+    //     method:"get",
+    //     dataType:'json',
+    //     success:function(result)
+    //     {	
+    //         setLocalStorage("dogadjaji",result);
+    //     }
+    // });
+    ajaxZaSve("data/desavanja.json","get",function(result)
     {
-        var id=$(this).data('id');
-        console.log(id);
-        setLocalStorage("idDogadjaj",id);
-    });
+        setLocalStorage("dogadjaji",result);
+        var ispis2=`<ul class="popular-posts" id="izdvojeno">`;
+        //var dogadjaji1=getLocalStorage("dogadjaji");
+        result.forEach(element => {
+            ispis2+=
+            `
+            <li style="padding:5px;">                                    
+            <!--Post item small-->
+            <div class="post-item-small" style="display:flex;">
+                        <div class="left"style="width:50%;">
+                        <a class="slika" target="_blank" href="dogadjaji.html" data-id="${element.id}">
+                           <img src="images/${element.slika}" alt="${element.slika}" style="width:100%!important;">          
+                        </a>
+                    </div>
+                    <div class="right"style="width:40%;padding:5px;">
+                    <h3 class="title"style="margin-bottom:0px;">
+                        <a class="slika" target="_blank" data-id="${element.id}" href="dogadjaji.html">
+                            ${element.naslov}            </a>
+                    </h3>
+                    <small data-id="${element.autor}" class="date"><i class="fa fa-user"></i>${element.autor}</small></br>
+                    <small data-id="${element.id}" class="date"><i class="fa fa-calendar"></i>${element.datum}</small>
+                </div>
+            </div>                            </li>
+            `
+        });
+        ispis2+=`</ul>`;
+        $("#tab_popular_posts_response").html(ispis2);
+        $( ".slika" ).mouseenter(function()
+        {
+            var id=$(this).data('id');
+            console.log(id);
+            setLocalStorage("idDogadjaj",id);
+        });
+    })
+
 
 }
-var url=window.location.href;
+// var url=window.location.href;
 if(url.indexOf('prodavnica.html')!=-1)
 {  
-    $.ajax({
-        url:'data/proizvodi.json',
-        method:"get",
-        dataType:'json',
-        success:function(result)
-        {	
-            setLocalStorage("proizvodi",result);
-        }
-    });
-    var ispis="";
-    var proizvodi=getLocalStorage("proizvodi");
-    proizvodi.forEach(element => {
-        ispis+=
-        `
-        <div class="col-md-4 col-sm-6 box"style="padding-top:20px;display:flex;justify-content:center;">
-        <div class="proizvodd"style="padding-bottom:60px;"><a href="zasebanProizvod.html" class="woocommerce-LoopProduct-link woocommerce-loop-product__link art"data-id="${element.id}"><img data-id="${element.id}" width="200" height="200" src="images/prodavnica/${element.slika}.jpg" class="attachment-woocommerce_thumbnail size-woocommerce_thumbnail" alt="${element.slika}" loading="lazy" >
-        <h2 data-id="${element.id}" style="     word-wrap: break-word;width: min-content;  " class="woocommerce-loop-product__title">${element.naziv}</h2>
-        
-        </a></div><div class="dodajKorpa"style=" width:max-content ;  bottom: 0px!important;position: absolute;">    <h2 style="background-color:#2e443f;color:white;">Телефон за куповину:</br><a class="a1234"  target="_blank"  href="tel:0645877322"><i class="fa fa-phone"style="color:white;font-size:25px">&nbsp;&nbsp;&nbsp;</i> 0645877322</a>    <h2>
-        </div>
-        </div>
+    // $.ajax({
+    //     url:'data/proizvodi.json',
+    //     method:"get",
+    //     dataType:'json',
+    //     success:function(result)
+    //     {	
+    //         setLocalStorage("proizvodi",result);
+    //     }
+    // });
+    ajaxZaSve("data/proizvodi.json","get",function(result)
+    {
+        setLocalStorage("proizvodi",result);
+        var ispis="";
+        //var proizvodi=getLocalStorage("proizvodi");
+        result.forEach(element => {
+            ispis+=
+            `
+            <div class="col-md-4 col-sm-6 box"style="padding-top:20px;display:flex;justify-content:center;">
+            <div class="proizvodd"style="padding-bottom:60px;"><a href="zasebanProizvod.html" class="woocommerce-LoopProduct-link woocommerce-loop-product__link art"data-id="${element.id}"><img data-id="${element.id}" width="200" height="200" src="images/prodavnica/${element.slika}.jpg" class="attachment-woocommerce_thumbnail size-woocommerce_thumbnail" alt="${element.slika}" loading="lazy" >
+            <h2 data-id="${element.id}" style="     word-wrap: break-word;width: min-content;  " class="woocommerce-loop-product__title">${element.naziv}</h2>
+            
+            </a></div><div class="dodajKorpa"style=" width:max-content ;  bottom: 0px!important;position: absolute;">    <h2 style="background-color:#2e443f;color:white;">Телефон за куповину:</br><a class="a1234"  target="_blank"  href="tel:0645877322"><i class="fa fa-phone"style="color:white;font-size:25px">&nbsp;&nbsp;&nbsp;</i> 0645877322</a>    <h2>
+            </div>
+            </div>
+    
+            `
+        });
+        //  <button class="dodajKorpaa" value="Додај у корпу"data-id="${element.id}">Додај у корпу</button>
+        //<span class="price"><span class="woocommerce-Price-amount amount"><bdi>${element.cena}&nbsp;<span class="woocommerce-Price-currencySymbol">рсд</span></bdi></span></span>
+        $("#artiklii").html(ispis);
+        $(".art").mouseenter(dodavanjeId);
+    })
 
-        `
-    });
-    //  <button class="dodajKorpaa" value="Додај у корпу"data-id="${element.id}">Додај у корпу</button>
-    //<span class="price"><span class="woocommerce-Price-amount amount"><bdi>${element.cena}&nbsp;<span class="woocommerce-Price-currencySymbol">рсд</span></bdi></span></span>
-    $("#artiklii").html(ispis);
-    $(".art").mouseenter(dodavanjeId);
-    $.ajax({
-        url:'data/kategorije.json',
-        method:"get",
-        dataType:'json',
-        success:function(result)
-        {	
-            setLocalStorage("kategorije",result);
-        }
-    });
-    var ispis2="";
-    var kategorije=getLocalStorage("kategorije");
-    kategorije.forEach(element => {
-        // ispis2+=
-        // `
-        // <div class="col-md-1 col-sm-6 box"style="padding-top:20px;display:flex;justify-content:center;">
-        // <div class="proizvodd"style="padding-bottom:40px;"><a href="#" class="woocommerce-LoopProduct-link woocommerce-loop-product__link"><img width="100%" height="100px" src="images/prodavnica/${element.slike}.jpg" class="attachment-woocommerce_thumbnail size-woocommerce_thumbnail" alt="${element.slika}" loading="lazy" >
-        // <h2 style="     word-wrap: break-word;width: min-content;  " class="woocommerce-loop-product__title">${element.naziv}</h2>
-        // </a></div>
-        // </div>
+    // $.ajax({
+    //     url:'data/kategorije.json',
+    //     method:"get",
+    //     dataType:'json',
+    //     success:function(result)
+    //     {	
+    //         setLocalStorage("kategorije",result);
+    //     }
+    // });
+    ajaxZaSve('data/kategorije.json',"get",function(result)
+    {
+        setLocalStorage("kategorije",result);
+        var ispis2="";
+        //var kategorije=getLocalStorage("kategorije");
+        result.forEach(element => {
+            // ispis2+=
+            // `
+            // <div class="col-md-1 col-sm-6 box"style="padding-top:20px;display:flex;justify-content:center;">
+            // <div class="proizvodd"style="padding-bottom:40px;"><a href="#" class="woocommerce-LoopProduct-link woocommerce-loop-product__link"><img width="100%" height="100px" src="images/prodavnica/${element.slike}.jpg" class="attachment-woocommerce_thumbnail size-woocommerce_thumbnail" alt="${element.slika}" loading="lazy" >
+            // <h2 style="     word-wrap: break-word;width: min-content;  " class="woocommerce-loop-product__title">${element.naziv}</h2>
+            // </a></div>
+            // </div>
+    
+            // `
+            ispis2+=
+            `
+            <p data-id="${element.naziv}" class="kat">${element.naziv}</label><p>
+            `
+        });
+        $("#kategorije").html(ispis2);
+        function pointer() {
+            document.getElementById("kategorije").style.cursor = "pointer";
+            //document.getElementById("sortiranje").style.cursor = "pointer";
+          }
+          $(".kat").mouseenter(pointer);
+          $(".kat").click(obradaKat);
+    })
 
-        // `
-        ispis2+=
-        `
-        <p data-id="${element.naziv}" class="kat">${element.naziv}</label><p>
-        `
-    });
-    $("#kategorije").html(ispis2);
-    function pointer() {
-        document.getElementById("kategorije").style.cursor = "pointer";
-        //document.getElementById("sortiranje").style.cursor = "pointer";
-      }
-      $(".kat").mouseenter(pointer);
      // $(".sort").mouseenter(pointer);
     function dodavanjeId()
     {
@@ -686,7 +747,7 @@ if(url.indexOf('prodavnica.html')!=-1)
         var id=$(this).data("id");
         setLocalStorage("korpa",id);
     }
-    $(".kat").click(obradaKat);
+    
     function obradaKat()
     {
         var naziv=$(this).data("id");
@@ -756,7 +817,7 @@ if(url.indexOf('prodavnica.html')!=-1)
     }
 
 }
-var url=window.location.href;
+// var url=window.location.href;
 if(url.indexOf('zasebanProizvod.html')!=-1)
 {  
     var id=getLocalStorage("idProizvoda");
@@ -933,4 +994,4 @@ $("#mail").on("blur",function()
 //     }
 // });
 
-}
+// }
