@@ -236,6 +236,10 @@ window.onload = () => {
             error: function(xhr){console.log(xhr);}
         });
     }
+	ajaxZaSve("data/cuda.json","get",function(result)
+    {	
+	setLocalStorage("cuda",result);
+    });
     ajaxZaSve("data/desavanja.json","get",function(result)
     {	
 	setLocalStorage("dogadjaji",result);
@@ -252,15 +256,6 @@ window.onload = () => {
             console.log(id);
             setLocalStorage("idDogadjaj",id);
         }
-        $.ajax({
-            url:'data/desavanja.json',
-            method:"get",
-            dataType:'json',
-            success:function(result)
-            {	
-                setLocalStorage("dogadjaji",result);
-            }
-        });
         var dogadjajiIndex=getLocalStorage("dogadjaji");
         var ispisDogadjaja="";
         for(let i=0;i<=3;i++)
@@ -284,15 +279,6 @@ window.onload = () => {
         
         $("#indexNews").html(ispisDogadjaja);
         $( ".slika" ).mouseenter(dogadjajiIndexf);
-        $.ajax({
-            url:'data/video.json',
-            method:"get",
-            dataType:'json',
-            success:function(result)
-            {	
-                setLocalStorage("video",result);
-            }
-        });
         function videoIndex()
         {
             var id=$(this).data('id');
@@ -329,15 +315,7 @@ window.onload = () => {
             setLocalStorage("idCuda",id);
         }
         $( ".slika2" ).mouseenter(cudaIndex);
-        $.ajax({
-            url:'data/cuda.json',
-            method:"get",
-            dataType:'json',
-            success:function(result)
-            {	
-                setLocalStorage("cuda",result);
-            }
-        });
+
         var svaCuda=getLocalStorage("cuda");
         var item = svaCuda[Math.floor(Math.random() * svaCuda.length)];
         var ispisCuda=`
