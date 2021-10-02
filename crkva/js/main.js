@@ -227,6 +227,23 @@ window.onload = () => {
         });
     }
     var url=window.location.href;
+	      function ajaxZaSve(url, method, result){
+        $.ajax({
+            url:url,
+            method: method,
+            dataType: "json",
+            success: result,
+            error: function(xhr){console.log(xhr);}
+        });
+    }
+    ajaxZaSve("data/desavanja.json","get",function(result)
+    {	
+	setLocalStorage("dogadjaji",result);
+    });
+    ajaxZaSve("data/video.json","get",function(result)
+    {	
+	setLocalStorage("video",result);
+    });
     if(url.indexOf('index.html')!=-1)
     {
         function dogadjajiIndexf()
